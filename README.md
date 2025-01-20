@@ -66,7 +66,7 @@ Navigate to the MusicBox directory, create a Python virtual environment, and ins
 
 ```bash
 cd /usr/local/bin/musicbox/
-# now copy or clone source code in the folder
+# Now, copy or clone the source code into the designated folder and modify the run.sh script to match your environment and needs.
 python3 -m venv env-musicbox
 sudo chown -R $USER:$USER ./env-musicbox  # Run this if you encounter permission issues
 source env-musicbox/bin/activate
