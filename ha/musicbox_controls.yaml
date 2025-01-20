@@ -1,0 +1,152 @@
+alias: Musicbox - Controls
+description: ""
+triggers:
+  - topic: musicbox/controls
+    trigger: mqtt
+conditions: []
+actions:
+  - variables:
+      action: "{{ trigger.payload }}"
+  - choose:
+      - alias: Volume Up
+        conditions:
+          - condition: template
+            value_template: "{{ action == 'volume_up' }}"
+        sequence:
+          - action: media_player.volume_up
+            metadata: {}
+            data: {}
+            target:
+              entity_id:
+                - media_player.spotify_tobias_munzert
+                - media_player.music_player_daemon
+                - media_player.49pus6401
+      - alias: Volume Down
+        conditions:
+          - condition: template
+            value_template: "{{ action == 'volume_down' }}"
+        sequence:
+          - action: media_player.volume_down
+            metadata: {}
+            data: {}
+            target:
+              entity_id:
+                - media_player.49pus6401
+                - media_player.music_player_daemon
+                - media_player.spotify_tobias_munzert
+      - alias: Repeat (Play/Pause)
+        conditions:
+          - condition: template
+            value_template: "{{ action == 'playpause' }}"
+        sequence:
+          - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: media_player.music_player_daemon
+                    attribute: repeat
+                    state: all
+                sequence:
+                  - action: media_player.repeat_set
+                    metadata: {}
+                    data:
+                      repeat: one
+                    target:
+                      entity_id:
+                        - media_player.music_player_daemon
+                        - media_player.spotify_tobias_munzert
+            default:
+              - action: media_player.repeat_set
+                metadata: {}
+                data:
+                  repeat: all
+                target:
+                  entity_id:
+                    - media_player.music_player_daemon
+              - choose:
+                  - conditions:
+                      - condition: state
+                        entity_id: media_player.spotify_tobias_munzert
+                        attribute: source
+                        state: sk61
+                    sequence:
+                      - action: media_player.repeat_set
+                        metadata: {}
+                        data:
+                          repeat: one
+                        target:
+                          entity_id: media_player.spotify_tobias_munzert
+      - alias: Previous Song
+        conditions:
+          - condition: template
+            value_template: "{{ action == 'prev' }}"
+        sequence:
+          - choose:
+              - conditions:
+                  - condition: device
+                    device_id: 524a3b4d21dbe5984af4e0b2bd2c3a5d
+                    domain: media_player
+                    entity_id: 81920bfa76a06fe06068b75dfb2b912b
+                    type: is_playing
+                sequence:
+                  - action: media_player.media_previous_track
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id: media_player.music_player_daemon
+              - conditions:
+                  - condition: device
+                    device_id: a5ba5cb5fa2d0828600fca7fd1d30e2e
+                    domain: media_player
+                    entity_id: 44286d1faf0e2fd39b95ed26fe57cdcb
+                    type: is_playing
+                  - condition: state
+                    entity_id: media_player.spotify_tobias_munzert
+                    attribute: source
+                    state: sk61
+                sequence:
+                  - action: media_player.media_previous_track
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id: media_player.spotify_tobias_munzert
+      - alias: Next Song
+        conditions:
+          - condition: template
+            value_template: "{{ action == 'next' }}"
+        sequence:
+          - choose:
+              - conditions:
+                  - condition: device
+                    device_id: 524a3b4d21dbe5984af4e0b2bd2c3a5d
+                    domain: media_player
+                    entity_id: 81920bfa76a06fe06068b75dfb2b912b
+                    type: is_playing
+                sequence:
+                  - action: media_player.media_next_track
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id: media_player.music_player_daemon
+              - conditions:
+                  - condition: device
+                    device_id: a5ba5cb5fa2d0828600fca7fd1d30e2e
+                    domain: media_player
+                    entity_id: 44286d1faf0e2fd39b95ed26fe57cdcb
+                    type: is_playing
+                  - condition: state
+                    entity_id: media_player.spotify_tobias_munzert
+                    attribute: source
+                    state: sk61
+                sequence:
+                  - action: media_player.media_next_track
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id: media_player.spotify_tobias_munzert
+    default:
+      - action: system_log.write
+        metadata: {}
+        data:
+          level: error
+          message: "Unknown action: {{ action }}"
+mode: single

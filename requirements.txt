@@ -1,0 +1,4 @@
+mfrc522==0.0.7
+ndeflib==0.3.3
+paho-mqtt==2.1.0
+evdev==1.7.1

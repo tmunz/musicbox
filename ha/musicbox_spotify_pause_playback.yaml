@@ -1,0 +1,15 @@
+alias: Musicbox Spotify Pause Playback
+description: ""
+triggers: []
+conditions:
+  - condition: state
+    entity_id: media_player.spotify_tobias_munzert
+    attribute: source
+    state: sk61
+actions:
+  - action: media_player.media_pause
+    metadata: {}
+    data: {}
+    target:
+      entity_id: media_player.spotify_tobias_munzert
+mode: single

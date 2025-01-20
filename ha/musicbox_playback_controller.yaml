@@ -1,0 +1,155 @@
+alias: Musicbox - Playback Controller
+description: ""
+triggers:
+  - topic: musicbox/playback
+    trigger: mqtt
+actions:
+  - variables:
+      data: |
+        {{ trigger.payload | from_json }}
+      data_id: |
+        {{ data.id }}
+      action: |
+        {{ data.action }}
+      content_tag: |
+        {{ data.content }}
+      content_ha: |
+        {{ state_attr('tag.' + (data_id | string), 'friendly_name') }}
+      content: |
+        {{ content_tag or content_ha}}
+      content_uri: |
+        {{ content.split(':') }}
+      content_domain: |
+        {{ content_uri[0] }}
+      content_type: |
+        {{ content_uri[1] }}
+      content_id: |
+        {{ content_uri[2] }}
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ content_ha == 'Tag ' + (data_id | string) }}"
+          - condition: template
+            value_template: "{{ content_tag != '' }}"
+        sequence: []
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'start_playback' }}"
+            alias: action == 'start_playback'
+        sequence:
+          - alias: Start Playback
+            choose:
+              - conditions:
+                  - condition: template
+                    value_template: "{{ content_domain == 'spotify' }}"
+                    alias: content_domain == 'spotify'
+                sequence:
+                  - action: automation.trigger
+                    metadata: {}
+                    data:
+                      variables:
+                        content: "{{ content }}"
+                        content_type: "{{ content_type }}"
+                        content_id: "{{ content_id }}"
+                    target:
+                      entity_id: automation.musicbox_spotify_start_playback
+                    alias: Trigger Spotify Start Playback
+                alias: Domain - Spotify
+              - conditions:
+                  - condition: template
+                    value_template: "{{ content_domain == 'mpd' }}"
+                    alias: content_domain == 'mpd'
+                sequence:
+                  - action: automation.trigger
+                    metadata: {}
+                    data:
+                      variables:
+                        content: "{{ content }}"
+                        content_type: "{{ content_type }}"
+                        content_id: "{{ content_id }}"
+                    target:
+                      entity_id: automation.musicbox_start_playback_mpd
+                    alias: Trigger MPD Start Playback
+                alias: Domain - MPD
+        alias: Action - Start Playback
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'resume_playback' }}"
+            alias: action == 'resume_playback'
+        sequence:
+          - alias: Resume Playback
+            choose:
+              - conditions:
+                  - condition: template
+                    value_template: "{{ content_domain == 'spotify' }}"
+                    alias: content_domain == 'spotify'
+                sequence:
+                  - action: automation.trigger
+                    metadata: {}
+                    data:
+                      variables:
+                        content: "{{ content }}"
+                    target:
+                      entity_id: automation.musicbox_spotify_resume_playback
+                    alias: Trigger Spotify Resume Playback
+                alias: Domain - Spotify
+              - conditions:
+                  - condition: template
+                    value_template: "{{ content_domain == 'mpd' }}"
+                    alias: content_domain == 'mpd'
+                sequence:
+                  - action: automation.trigger
+                    metadata: {}
+                    data:
+                      variables:
+                        content: "{{ content }}"
+                    target:
+                      entity_id: automation.musicbox_mpd_resume_playback
+                    alias: Trigger MPD Resume Playback
+                alias: Domain - MPD
+        alias: Action - Resume Playback
+      - conditions:
+          - condition: template
+            value_template: "{{ action == 'pause_playback' }}"
+            alias: action == 'pause_playback'
+        sequence:
+          - alias: Pause Playback
+            choose:
+              - conditions:
+                  - condition: template
+                    value_template: "{{ content_domain == 'spotify' }}"
+                    alias: content_domain == 'spotify'
+                sequence:
+                  - action: automation.trigger
+                    metadata: {}
+                    data:
+                      variables:
+                        content: "{{ content }}"
+                    target:
+                      entity_id: automation.musicbox_spotify_pause_playback
+                    alias: Trigger Spotify Pause Playback
+                alias: Domain - Spotify
+              - conditions:
+                  - condition: template
+                    value_template: "{{ content_domain == 'mpd' }}"
+                    alias: content_domain == 'mpd'
+                sequence:
+                  - action: automation.trigger
+                    metadata: {}
+                    data:
+                      variables:
+                        content: "{{ content }}"
+                    target:
+                      entity_id: automation.musicbox_mpd_pause_playback
+                    alias: Trigger MPD Pause Playback
+                alias: Domain - MPD
+        alias: Action - Pause Playback
+    default:
+      - data:
+          name: Musicbox Controller
+          message: |
+            Unsupported action {{ action }} or domain {{ content_domain }}
+        action: logbook.log
+        alias: Log Unsupported
+mode: single

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MusicBox</title>
+  <script>
+    async function handleWriteData(event) {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      writeData(formData);
+    }
+
+    async function handleWriteSpotify(event) {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const originalData = formData.get('data');
+      formData.set('data', convertSpotifyUrl(originalData));
+      writeData(formData);
+    }
+
+    async function writeData(formData) {
+      const urlEncodedData = new URLSearchParams();
+      for (const [key, value] of formData.entries()) {
+        urlEncodedData.append(key, value);
+      }
+
+      try {
+        const response = await fetch('/tag/write', {
+          method: 'POST',
+          body: urlEncodedData
+        });
+
+        const result = await response.text();
+        alert(result);
+        window.location.reload();
+      } catch (error) {
+        console.error('Error submitting form:', error);
+      }
+    }
+
+    function convertSpotifyUrl(url) {
+      try {
+        const urlObj = new URL(url);
+        const pathSegments = urlObj.pathname.split('/');
+        const type = pathSegments[1];
+        const id = pathSegments[2];
+        return 'spotify:' + type + ':' + id;
+      } catch (error) {
+        console.error('Invalid Spotify URL:', error);
+        alert('Invalid Spotify URL');
+        return url;
+      }
+    }
+  </script>
+</head>
+<body>
+  <h1>Status</h1>
+  <div><label>Content: <span>$content</span></label></div>
+  <div><label>Tag: <span>$tag_id</span></label></div>
+  <div><label>Last: <span>$last_id</span></label></div>
+  <div><label>Current: <span>$current_id</span></label></div>
+  <div><label>Resilience Counter: <span>$resilience_counter</span></label></div>
+  <h1>Write Data to Tag</h1>
+  <form id="dataForm" onsubmit="handleWriteData(event)">
+    <label for="data">Data:</label>
+    <input type="text" name="data" required>
+    <button type="submit">Write</button>
+  </form>
+
+  <h1>Convert Spotify-URL to URI and write to Tag</h1>
+  <form id="spotifyForm" onsubmit="handleWriteSpotify(event)">
+    <label for="spotifyData">Spotify URL:</label>
+    <input type="text" name="data" required>
+    <button type="submit">Write</button>
+  </form>
+</body>
+</html>

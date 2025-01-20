@@ -1,0 +1,10 @@
+alias: Musicbox MPD Resume Playback
+description: ""
+triggers: []
+conditions: []
+actions:
+  - action: media_player.media_play
+    data: {}
+    target:
+      entity_id: media_player.music_player_daemon
+mode: single

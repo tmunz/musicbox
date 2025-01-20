@@ -1,0 +1,18 @@
+alias: Musicbox MPD Start Playback
+description: ""
+triggers: []
+actions:
+  - action: media_player.repeat_set
+    metadata: {}
+    data:
+      repeat: all
+    target:
+      entity_id: media_player.music_player_daemon
+  - action: media_player.play_media
+    metadata: {}
+    data:
+      media_content_type: "{{ content_type }}"
+      media_content_id: "{{ content_id }}"
+    target:
+      entity_id: media_player.music_player_daemon
+mode: single

@@ -1,0 +1,39 @@
+alias: Musicbox Spotify Resume Playback
+description: ""
+triggers: []
+conditions: []
+actions:
+  - target:
+      entity_id: media_player.spotify_tobias_munzert
+    data:
+      source: sk61
+    action: media_player.select_source
+  - repeat:
+      while:
+        - condition: not
+          conditions:
+            - condition: state
+              entity_id: media_player.spotify_tobias_munzert
+              state: sk61
+              for:
+                hours: 0
+                minutes: 0
+                seconds: 0
+              attribute: source
+      sequence:
+        - delay:
+            hours: 0
+            minutes: 0
+            seconds: 1
+            milliseconds: 0
+        - data:
+            message: >
+              Waiting for Spotify to play. Current state: {{
+              states('media_player.spotify_tobias_munzert') }}
+            level: warning
+          action: system_log.write
+  - action: media_player.media_play
+    data: {}
+    target:
+      entity_id: media_player.spotify_tobias_munzert
+mode: single

@@ -1,0 +1,19 @@
+alias: Musicbox Spotify Single Playback
+description: Pause other media players when one starts playing.
+triggers:
+  - entity_id:
+      - media_player.spotify_tobias_munzert
+    to: playing
+    trigger: state
+conditions:
+  - condition: state
+    entity_id: media_player.spotify_tobias_munzert
+    attribute: source
+    state: sk61
+actions:
+  - action: media_player.media_pause
+    metadata: {}
+    data: {}
+    target:
+      entity_id: media_player.music_player_daemon
+mode: single

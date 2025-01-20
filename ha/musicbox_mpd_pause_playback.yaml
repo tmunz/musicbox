@@ -1,0 +1,12 @@
+alias: Musicbox MPD Pause Playback
+description: ""
+triggers: []
+conditions: []
+actions:
+  - action: media_player.media_pause
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+        - media_player.music_player_daemon
+mode: single
