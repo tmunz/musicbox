@@ -1,5 +1,6 @@
 # musicbox
-This project is an open-source solution for media playback with **NTAGs**, **MQTT commands**, and providing an optional **web interface**. Designed to integrate seamlessly with platforms like **Home Assistant**, it offers a fun and flexible way to control smart devices or trigger automations using NFC tags and remote controls.
+This project is an open-source solution for media playback with **NTAGs**, **MQTT commands**, and providing an optional **web interface**. Designed to integrate seamlessly with platforms like **Home Assistant**, it offers a fun and flexible way to control smart devices or trigger automations using NFC tags and remote controls. 
+You are welcome to incorporate parts of this project into your own and customize the code to suit your requirements.
 
 ---
 
