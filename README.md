@@ -65,9 +65,9 @@ This guide provides examples for step-by-step instructions for setting up MusicB
 Navigate to the MusicBox directory, create a Python virtual environment, and install the required dependencies:
 
 ```bash
-cd /usr/local/bin/musicbox/
-# Now, copy or clone the source code into the designated folder and modify the run.sh script to match your environment and needs.
-python3 -m venv env-musicbox
+cd /usr/local/bin/musicbox/ # or choose another designate folder
+# Now, copy the code of the src folder into the designated folder and modify the run.sh script to match your environment and needs.
+python3 -m venv env-musicbox # create virtual python environment
 sudo chown -R $USER:$USER ./env-musicbox  # Run this if you encounter permission issues
 source env-musicbox/bin/activate
 pip install -r requirements.txt
