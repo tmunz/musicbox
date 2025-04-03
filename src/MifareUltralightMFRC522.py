@@ -12,6 +12,8 @@ class MifareUltralightMFRC522:
 
   def __init__(self, log_level='WARNING'):
     self.mfrc = MFRC522(debugLevel=log_level)
+    self.mfrc.Write_MFRC522(self.mfrc.TxControlReg, 0x83)
+    self.mfrc.Write_MFRC522(self.mfrc.RFCfgReg, 0x70)
     self.lock = threading.Lock() 
 
   def connect(self):
@@ -47,11 +49,11 @@ class MifareUltralightMFRC522:
     value = None
     with self.lock: # threadsafe lock
       block_data = self.mfrc.MFRC522_Read(block_addr)
-      capability_memory_size = block_data[14]
-      limit_block = capability_memory_size * 8 / block_size
-      block_addr += block_size
-      block_data = self.mfrc.MFRC522_Read(block_addr)
       if (block_data):
+        capability_memory_size = block_data[14]
+        limit_block = capability_memory_size * 8 / block_size
+        block_addr += block_size
+        block_data = self.mfrc.MFRC522_Read(block_addr)
         assert block_data[0] == 0x03
         message_size = block_data[1]
         bytes = bytearray(block_data[2:])

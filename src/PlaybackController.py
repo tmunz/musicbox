@@ -60,7 +60,7 @@ class PlaybackController:
           else:
             self.resilience_counter = 0
             if(self.current_id != self.tag_id):
-              self.play()
+              self.play(self.tag_id)
         self.rfid_signal_event.clear()
       except Exception as e:
         logging.warning(e)
@@ -73,8 +73,8 @@ class PlaybackController:
       self.publisher.publish(TOPIC, self._get_tag_data('pause_playback'))
       self.current_id = None
   
-  def play(self):
-    (id, content) = self.mfrc.read()
+  def play(self, id):
+    (_, content) = self.mfrc.read()
     if (content is None):
       if (self.is_content_mandatory):
         return
