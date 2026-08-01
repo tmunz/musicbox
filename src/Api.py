@@ -1,13 +1,15 @@
+import json
 import logging
 import threading
+import time
 import os
 from string import Template
 from urllib.parse import parse_qs
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 class Api:
   def __init__(self, controller=None, host='0.0.0.0', port=8080):
-    self.server = HTTPServer((host, port), self._create_handler(controller))
+    self.server = ThreadingHTTPServer((host, port), self._create_handler(controller))
     logging.info(f'Server running on http://{host}:{port}')
     self.thread = threading.Thread(target=self._start_server, name=self.__class__.__name__, daemon=True)
     self.thread.start()
@@ -64,10 +66,34 @@ class HttpRequestHandler(BaseHTTPRequestHandler):
       logging.error(f"Error in handle_tag_write_post: {e}")
       self.send_response_with_body(500, 'text/plain', f"Internal Server Error: {e}")
 
+  def handle_events(self):
+    self.send_response(200)
+    self.send_header('Content-Type', 'text/event-stream')
+    self.send_header('Cache-Control', 'no-cache')
+    self.send_header('Connection', 'keep-alive')
+    self.end_headers()
+    try:
+      while True:
+        status = {
+          'content': self.controller.content or '-',
+          'tag_id': self.controller.tag_id or '-',
+          'last_id': self.controller.last_id or '-',
+          'current_id': self.controller.current_id or '-',
+          'resilience_counter': str(self.controller.resilience_counter)
+            if self.controller.resilience_counter is not None else '-',
+        }
+        self.wfile.write(f'data: {json.dumps(status)}\n\n'.encode('utf-8'))
+        self.wfile.flush()
+        time.sleep(1)
+    except (BrokenPipeError, ConnectionResetError, OSError):
+      pass
+
   def do_GET(self):
     try:
       if self.path in ('', '/', None):
         self.handle_home()
+      elif self.path == '/events':
+        self.handle_events()
       else:
         self.send_response(404)
         self.end_headers()

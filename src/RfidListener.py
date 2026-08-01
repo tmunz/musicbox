@@ -23,7 +23,7 @@ class RfidListener:
     while True:
       try:
         if (self.active):
-          callback(self.mfrc.read_id())
+          callback(self.mfrc.read())
         time.sleep(self.interval)
       except Exception as e:
         logging.warning(f'Exception: {e}')

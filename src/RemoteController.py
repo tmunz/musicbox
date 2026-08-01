@@ -36,7 +36,7 @@ class RemoteController:
       if not self.device:
         self.device = self.find_target_device()
         if not self.device:
-          logging.info(f"{self.target_device_name} currently not available. Retrying...")
+          logging.debug(f"{self.target_device_name} currently not available. Retrying...")
           time.sleep(2)
           continue
         logging.info(f"Monitoring input device: {self.device.name} ({self.device.path})")

@@ -53,14 +53,14 @@ class PlaybackController:
       try:
         self.rfid_signal_event.wait()
         while not self.rfid_input_queue.empty():
-          self.tag_id = self.rfid_input_queue.get()
+          (self.tag_id, tag_content) = self.rfid_input_queue.get()
           if (self.tag_id is None):
             if (self.current_id is not None):
               self.pause_with_resilience()
           else:
             self.resilience_counter = 0
             if(self.current_id != self.tag_id):
-              self.play(self.tag_id)
+              self.play(self.tag_id, tag_content)
         self.rfid_signal_event.clear()
       except Exception as e:
         logging.warning(e)
@@ -73,8 +73,7 @@ class PlaybackController:
       self.publisher.publish(TOPIC, self._get_tag_data('pause_playback'))
       self.current_id = None
   
-  def play(self, id):
-    (_, content) = self.mfrc.read()
+  def play(self, id, content):
     if (content is None):
       if (self.is_content_mandatory):
         return
